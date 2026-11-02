@@ -1,0 +1,12 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+scrape_configs:
+  - job_name: inference-api
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["inference-api:8000"]
+        labels: {service: inference-api}
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]

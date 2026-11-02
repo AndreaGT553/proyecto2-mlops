@@ -1,0 +1,46 @@
+# PostgreSQL de METADATOS: bases mlflowdb y airflowdb
+apiVersion: v1
+kind: Service
+metadata: {name: postgres-meta, namespace: mlops}
+spec:
+  selector: {app: postgres-meta}
+  ports: [{port: 5432, targetPort: 5432}]
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata: {name: postgres-meta, namespace: mlops}
+spec:
+  serviceName: postgres-meta
+  replicas: 1
+  selector: {matchLabels: {app: postgres-meta}}
+  template:
+    metadata: {labels: {app: postgres-meta}}
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports: [{containerPort: 5432}]
+          envFrom: [{secretRef: {name: postgres-meta-secret}}]
+          env: [{name: PGDATA, value: /var/lib/postgresql/data/pgdata}]
+          resources:
+            requests: {cpu: 100m, memory: 256Mi}
+            limits: {cpu: "1", memory: 1Gi}
+          readinessProbe:
+            exec: {command: ["sh", "-c", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"]}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            exec: {command: ["sh", "-c", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"]}
+            initialDelaySeconds: 30
+            periodSeconds: 20
+          volumeMounts:
+            - {name: data, mountPath: /var/lib/postgresql/data}
+            - {name: init, mountPath: /docker-entrypoint-initdb.d}
+      volumes:
+        - name: init
+          configMap: {name: metadb-init-sql}
+  volumeClaimTemplates:
+    - metadata: {name: data}
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources: {requests: {storage: 2Gi}}

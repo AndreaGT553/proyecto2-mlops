@@ -1,0 +1,39 @@
+# Despliegue completo:   kubectl apply -k .     (desde la raíz del repo)
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: mlops
+resources:
+  - k8s/00-namespace.yaml
+  - k8s/01-secrets.yaml
+  - k8s/10-postgres-data.yaml
+  - k8s/11-postgres-meta.yaml
+  - k8s/20-minio.yaml
+  - k8s/30-mlflow.yaml
+  - k8s/40-airflow.yaml
+  - k8s/50-inference-api.yaml
+  - k8s/60-streamlit.yaml
+  - k8s/70-locust.yaml
+  - k8s/80-prometheus.yaml
+  - k8s/81-grafana.yaml
+generatorOptions:
+  disableNameSuffixHash: true
+configMapGenerator:
+  - name: datadb-init-sql
+    files: [sql/01_datadb_schema.sql]
+  - name: metadb-init-sql
+    files: [sql/00_metadb_init.sql]
+  - name: prometheus-config
+    files: [observability/prometheus.yml]
+  - name: grafana-datasources
+    files: [observability/grafana-datasource.yml]
+  - name: grafana-dashboard-providers
+    files: [observability/grafana-dashboards.yml]
+  - name: grafana-dashboards
+    files: [observability/grafana-dashboard-api.json]
+# Reemplaza DOCKERHUB_USER por tu usuario de DockerHub (paso 3 del README)
+images:
+  - {name: DOCKERHUB_USER/p2-mlflow, newName: DOCKERHUB_USER/p2-mlflow, newTag: "1.0"}
+  - {name: DOCKERHUB_USER/p2-airflow, newName: DOCKERHUB_USER/p2-airflow, newTag: "1.0"}
+  - {name: DOCKERHUB_USER/p2-inference-api, newName: DOCKERHUB_USER/p2-inference-api, newTag: "1.0"}
+  - {name: DOCKERHUB_USER/p2-streamlit-ui, newName: DOCKERHUB_USER/p2-streamlit-ui, newTag: "1.0"}
+  - {name: DOCKERHUB_USER/p2-locust, newName: DOCKERHUB_USER/p2-locust, newTag: "1.0"}
