@@ -18,18 +18,29 @@ spec:
     metadata: {labels: {app: mlflow}}
     spec:
       initContainers:
-        - name: create-bucket   # crea el bucket en MinIO si no existe
-          image: minio/mc:RELEASE.2024-11-21T17-21-54Z
+        - name: create-bucket   # crea el bucket en MinIO si no existe (con boto3)
+          image: andregt553/p2-mlflow:1.0
           envFrom:
             - secretRef: {name: minio-secret}
             - configMapRef: {name: mlflow-config}
-          command: ["sh", "-c"]
+          command: ["python", "-c"]
           args:
-            - until mc alias set local $MLFLOW_S3_ENDPOINT_URL $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD; do echo esperando minio; sleep 3; done;
-              mc mb --ignore-existing local/$ARTIFACT_BUCKET
+            - |
+              import os, time, boto3
+              s3 = boto3.client("s3", endpoint_url=os.environ["MLFLOW_S3_ENDPOINT_URL"])
+              b = os.environ["ARTIFACT_BUCKET"]
+              for i in range(60):
+                  try:
+                      if b not in [x["Name"] for x in s3.list_buckets()["Buckets"]]:
+                          s3.create_bucket(Bucket=b)
+                      print("bucket listo:", b); break
+                  except Exception as e:
+                      print("esperando minio...", e); time.sleep(5)
+              else:
+                  raise SystemExit("MinIO no respondió")
           resources:
-            requests: {cpu: 50m, memory: 64Mi}
-            limits: {cpu: 200m, memory: 128Mi}
+            requests: {cpu: 50m, memory: 128Mi}
+            limits: {cpu: 200m, memory: 256Mi}
         - name: wait-db
           image: postgres:16-alpine
           command: ["sh", "-c", "until pg_isready -h postgres-meta -p 5432; do echo esperando postgres-meta; sleep 3; done"]

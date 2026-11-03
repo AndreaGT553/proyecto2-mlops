@@ -1,4 +1,6 @@
 # MinIO: almacén de objetos (artefactos de MLflow)
+# Desde oct-2025 MinIO ya no publica imágenes gratuitas en Docker Hub;
+# se usa la imagen gratuita mantenida por Chainguard.
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata: {name: minio-pvc, namespace: mlops}
@@ -16,9 +18,10 @@ spec:
   template:
     metadata: {labels: {app: minio}}
     spec:
+      securityContext: {fsGroup: 65532}
       containers:
         - name: minio
-          image: minio/minio:RELEASE.2024-12-18T13-15-44Z
+          image: cgr.dev/chainguard/minio:latest
           args: ["server", "/data", "--console-address", ":9001"]
           envFrom: [{secretRef: {name: minio-secret}}]
           ports: [{containerPort: 9000}, {containerPort: 9001}]
