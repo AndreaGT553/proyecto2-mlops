@@ -5,7 +5,10 @@ kubectl apply -k .
 echo "Esperando a que los pods estén listos (puede tardar varios minutos la primera vez)..."
 kubectl -n mlops wait --for=condition=available deployment --all --timeout=900s || true
 kubectl -n mlops get pods -o wide
-IP=$(hostname -I | awk '{print $1}')
+# En la VM usa su IP; en Docker Desktop (Windows/Mac) los NodePort quedan en localhost
+IP=$(hostname -I 2>/dev/null | awk '{print $1}')
+kubectl config current-context | grep -q docker-desktop && IP=localhost
+IP=${IP:-localhost}
 cat <<URLS
 
   Airflow     http://$IP:30080   (admin / admin)

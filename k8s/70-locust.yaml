@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: locust
-          image: DOCKERHUB_USER/p2-locust:1.0
+          image: andregt553/p2-locust:1.0
           envFrom: [{configMapRef: {name: locust-config}}]
           ports: [{containerPort: 8089}]
           resources:

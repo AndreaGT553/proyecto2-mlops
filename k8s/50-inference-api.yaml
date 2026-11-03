@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: DOCKERHUB_USER/p2-inference-api:1.0
+          image: andregt553/p2-inference-api:1.0
           envFrom: [{configMapRef: {name: api-config}}]
           env:
             - name: DATA_DB_DSN

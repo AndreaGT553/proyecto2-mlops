@@ -32,8 +32,8 @@ configMapGenerator:
     files: [observability/grafana-dashboard-api.json]
 # Reemplaza DOCKERHUB_USER por tu usuario de DockerHub (paso 3 del README)
 images:
-  - {name: DOCKERHUB_USER/p2-mlflow, newName: DOCKERHUB_USER/p2-mlflow, newTag: "1.0"}
-  - {name: DOCKERHUB_USER/p2-airflow, newName: DOCKERHUB_USER/p2-airflow, newTag: "1.0"}
-  - {name: DOCKERHUB_USER/p2-inference-api, newName: DOCKERHUB_USER/p2-inference-api, newTag: "1.0"}
-  - {name: DOCKERHUB_USER/p2-streamlit-ui, newName: DOCKERHUB_USER/p2-streamlit-ui, newTag: "1.0"}
-  - {name: DOCKERHUB_USER/p2-locust, newName: DOCKERHUB_USER/p2-locust, newTag: "1.0"}
+  - {name: andregt553/p2-mlflow, newName: andregt553/p2-mlflow, newTag: "1.0"}
+  - {name: andregt553/p2-airflow, newName: andregt553/p2-airflow, newTag: "1.0"}
+  - {name: andregt553/p2-inference-api, newName: andregt553/p2-inference-api, newTag: "1.0"}
+  - {name: andregt553/p2-streamlit-ui, newName: andregt553/p2-streamlit-ui, newTag: "1.0"}
+  - {name: andregt553/p2-locust, newName: andregt553/p2-locust, newTag: "1.0"}

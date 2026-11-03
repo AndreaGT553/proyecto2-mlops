@@ -52,7 +52,7 @@ spec:
             cpu: 100m
             memory: 64Mi
       - name: airflow-init
-        image: DOCKERHUB_USER/p2-airflow:1.0
+        image: andregt553/p2-airflow:1.0
         envFrom:
         - configMapRef:
             name: airflow-config
@@ -80,7 +80,7 @@ spec:
             memory: 1Gi
       containers:
       - name: webserver
-        image: DOCKERHUB_USER/p2-airflow:1.0
+        image: andregt553/p2-airflow:1.0
         args:
         - webserver
         envFrom:
@@ -122,7 +122,7 @@ spec:
         - name: logs
           mountPath: /opt/airflow/logs
       - name: scheduler
-        image: DOCKERHUB_USER/p2-airflow:1.0
+        image: andregt553/p2-airflow:1.0
         args:
         - scheduler
         envFrom:

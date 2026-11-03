@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: ui
-          image: DOCKERHUB_USER/p2-streamlit-ui:1.0
+          image: andregt553/p2-streamlit-ui:1.0
           envFrom: [{configMapRef: {name: ui-config}}]
           ports: [{containerPort: 8501}]
           resources:
